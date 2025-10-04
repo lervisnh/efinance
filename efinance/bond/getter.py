@@ -12,6 +12,7 @@ from ..common import get_today_bill as get_today_bill_for_bond
 from ..common.config import EASTMONEY_REQUEST_HEADERS, FS_DICT, MagicConfig
 from ..utils import get_quote_id, process_dataframe_and_series, to_numeric
 from .config import EASTMONEY_BOND_BASE_INFO_FIELDS
+from ..shared import request_proxies
 
 
 @to_numeric
@@ -40,7 +41,7 @@ def get_base_info_single(bond_code: str) -> pd.Series:
 
     url = "http://datacenter-web.eastmoney.com/api/data/v1/get"
     json_response = requests.get(
-        url, headers=EASTMONEY_REQUEST_HEADERS, params=params
+        url, headers=EASTMONEY_REQUEST_HEADERS, params=params, proxies=request_proxies
     ).json()
     if json_response["result"] is None:
         return pd.Series(index=columns.values(), dtype="object")
@@ -174,7 +175,7 @@ def get_all_base_info() -> pd.DataFrame:
 
         url = "http://datacenter-web.eastmoney.com/api/data/v1/get"
         json_response = requests.get(
-            url, headers=EASTMONEY_REQUEST_HEADERS, params=params
+            url, headers=EASTMONEY_REQUEST_HEADERS, params=params, proxies=request_proxies
         ).json()
         if json_response["result"] is None:
             break

@@ -10,7 +10,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 from ..common.config import MARKET_NUMBER_DICT, MarketType
-from ..shared import BASE_INFO_CACHE, session, MAX_CONNECTIONS
+from ..shared import BASE_INFO_CACHE, session, MAX_CONNECTIONS, request_proxies
 from ..utils import get_quote_id, to_numeric
 from .config import (
     EASTMONEY_BASE_INFO_FIELDS,
@@ -53,7 +53,7 @@ def get_realtime_quotes_by_fs(fs: str, **kwargs) -> pd.DataFrame:
         )
         url = "http://push2.eastmoney.com/api/qt/clist/get"
         json_response = session.get(
-            url, headers=EASTMONEY_REQUEST_HEADERS, params=params
+            url, headers=EASTMONEY_REQUEST_HEADERS, params=params, proxies=request_proxies
         ).json()
         return json_response
 
@@ -150,7 +150,7 @@ def get_quote_history_single(
     url = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
 
     json_response = session.get(
-        url, headers=EASTMONEY_REQUEST_HEADERS, params=params, verify=False
+        url, headers=EASTMONEY_REQUEST_HEADERS, params=params, verify=False, proxies=request_proxies
     ).json()
     klines: List[str] = jsonpath(json_response, "$..klines[:]")
     if not klines:
@@ -343,7 +343,7 @@ def get_history_bill(code: str) -> pd.DataFrame:
     )
     url = "http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get"
     json_response = session.get(
-        url, headers=EASTMONEY_REQUEST_HEADERS, params=params
+        url, headers=EASTMONEY_REQUEST_HEADERS, params=params, proxies=request_proxies
     ).json()
 
     klines: List[str] = jsonpath(json_response, "$..klines[:]")
@@ -387,7 +387,7 @@ def get_today_bill(code: str) -> pd.DataFrame:
     )
     url = "http://push2.eastmoney.com/api/qt/stock/fflow/kline/get"
     json_response = session.get(
-        url, headers=EASTMONEY_REQUEST_HEADERS, params=params
+        url, headers=EASTMONEY_REQUEST_HEADERS, params=params, proxies=request_proxies
     ).json()
     columns = [
         "时间",
@@ -424,7 +424,7 @@ def get_base_info(quote_id: str) -> pd.Series:
     )
     url = "http://push2.eastmoney.com/api/qt/stock/get"
     json_response = session.get(
-        url, headers=EASTMONEY_REQUEST_HEADERS, params=params
+        url, headers=EASTMONEY_REQUEST_HEADERS, params=params, proxies=request_proxies
     ).json()
     items = json_response["data"]
     if not items:
@@ -527,7 +527,7 @@ def get_latest_quote(quote_id_list: Union[str, List[str]], **kwargs) -> pd.DataF
     )
     url = "https://push2.eastmoney.com/api/qt/ulist.np/get"
     json_response = session.get(
-        url, headers=EASTMONEY_REQUEST_HEADERS, params=params
+        url, headers=EASTMONEY_REQUEST_HEADERS, params=params, proxies=request_proxies
     ).json()
     rows = jsonpath(json_response, "$..diff[:]")
     if not rows:
@@ -581,7 +581,7 @@ def get_latest_ndays_quote(code: str, ndays: int = 1, **kwargs) -> pd.DataFrame:
     )
 
     json_response = session.get(
-        "http://push2his.eastmoney.com/api/qt/stock/trends2/get", params=params
+        "http://push2his.eastmoney.com/api/qt/stock/trends2/get", params=params, proxies=request_proxies
     ).json()
 
     klines: List[str] = jsonpath(json_response, "$..trends[:]")

@@ -24,7 +24,7 @@ from ..common import get_realtime_quotes_by_fs
 from ..common import get_today_bill as get_today_bill_for_stock
 from ..common.config import EASTMONEY_REQUEST_HEADERS, FS_DICT, MagicConfig, MarketType
 from ..common.getter import get_latest_quote as get_latest_quote_for_stock
-from ..shared import session
+from ..shared import session, request_proxies
 from ..utils import (
     get_quote_id,
     process_dataframe_and_series,
@@ -843,7 +843,7 @@ def get_all_company_performance(date: str = None) -> pd.DataFrame:
         )
         url = "http://datacenter-web.eastmoney.com/api/data/get"
         json_response = session.get(
-            url, headers=EASTMONEY_REQUEST_HEADERS, params=params
+            url, headers=EASTMONEY_REQUEST_HEADERS, params=params, proxies=request_proxies
         ).json()
         return json_response
 
@@ -974,7 +974,7 @@ def get_latest_holder_number(date: str = None) -> pd.DataFrame:
         params = tuple(params)
         url = "http://datacenter-web.eastmoney.com/api/data/v1/get"
         json_response = session.get(
-            url, headers=EASTMONEY_REQUEST_HEADERS, params=params
+            url, headers=EASTMONEY_REQUEST_HEADERS, params=params, proxies=request_proxies
         ).json()
         return json_response
 
@@ -1206,7 +1206,7 @@ def get_members(index_code: str) -> pd.DataFrame:
             )
             url = "https://fundztapi.eastmoney.com/FundSpecialApiNew/FundSpecialZSB30ZSCFG"
             json_response = requests.get(
-                url, params=params, headers=EASTMONEY_REQUEST_HEADERS
+                url, params=params, headers=EASTMONEY_REQUEST_HEADERS, proxies=request_proxies
             ).json()
             items = json_response["Datas"]
             # NOTE 这是为了跳过排在前面但无法获取成分股的指数 例如搜索 白酒 时排在前面的 980031
@@ -1278,7 +1278,7 @@ def get_latest_ipo_info() -> pd.DataFrame:
         )
         url = "http://datacenter-web.eastmoney.com/api/data/get"
         json_response = requests.get(
-            url, headers=EASTMONEY_REQUEST_HEADERS, params=params
+            url, headers=EASTMONEY_REQUEST_HEADERS, params=params, proxies=request_proxies
         ).json()
         items = jsonpath(json_response, "$..data[:]")
         if not items:

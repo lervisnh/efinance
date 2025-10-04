@@ -17,7 +17,7 @@ import time
 from ..utils import to_numeric
 from .config import EastmoneyFundHeaders
 from ..common.config import MagicConfig
-from ..shared import session, MAX_CONNECTIONS
+from ..shared import session, MAX_CONNECTIONS, request_proxies
 import warnings
 
 warnings.filterwarnings("module")
@@ -84,7 +84,7 @@ def get_quote_history(fund_code: str, pz: int = 40000) -> pd.DataFrame:
     }
     url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList"
     json_response = fund_session.get(
-        url, headers=EastmoneyFundHeaders, data=data, verify=False
+        url, headers=EastmoneyFundHeaders, data=data, verify=False, proxies=request_proxies
     ).json()
     rows = []
     columns = ["日期", "单位净值", "累计净值", "涨跌幅"]
@@ -190,7 +190,7 @@ def get_realtime_increase_rate(fund_codes: Union[List[str], str]) -> pd.DataFram
     }
     url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo"
     json_response = fund_session.get(
-        url, headers=EastmoneyFundHeaders, data=data
+        url, headers=EastmoneyFundHeaders, data=data, proxies=request_proxies
     ).json()
     rows = jsonpath(json_response, "$..Datas[:]")
     if not rows:
@@ -411,7 +411,7 @@ def get_invest_position(
             params.append(("DATE", date))
         url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNInverstPosition"
         json_response = fund_session.get(
-            url, headers=EastmoneyFundHeaders, params=params
+            url, headers=EastmoneyFundHeaders, params=params, proxies=request_proxies
         ).json()
         stocks = jsonpath(json_response, "$..fundStocks[:]")
         if not stocks:
@@ -474,7 +474,7 @@ def get_period_change(fund_code: str) -> pd.DataFrame:
     )
     url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNPeriodIncrease"
     json_response = fund_session.get(
-        url, headers=EastmoneyFundHeaders, params=params
+        url, headers=EastmoneyFundHeaders, params=params, proxies=request_proxies
     ).json()
     columns = {
         "syl": "收益率",
@@ -540,7 +540,7 @@ def get_public_dates(fund_code: str) -> List[str]:
     )
     url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNIVInfoMultiple"
     json_response = fund_session.get(
-        url, headers=EastmoneyFundHeaders, params=params
+        url, headers=EastmoneyFundHeaders, params=params, proxies=request_proxies
     ).json()
     if json_response["Datas"] is None:
         return []
@@ -614,7 +614,7 @@ def get_types_percentage(
         params = tuple(params)
         url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNAssetAllocationNew"
         json_response = fund_session.get(
-            url, params=params, headers=EastmoneyFundHeaders
+            url, params=params, headers=EastmoneyFundHeaders, proxies=request_proxies
         ).json()
 
         if len(json_response["Datas"]) == 0:
@@ -652,7 +652,7 @@ def get_base_info_single(fund_code: str) -> pd.Series:
     )
     url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNNBasicInformation"
     json_response = fund_session.get(
-        url, headers=EastmoneyFundHeaders, params=params
+        url, headers=EastmoneyFundHeaders, params=params, proxies=request_proxies
     ).json()
     columns = {
         "FCODE": "基金代码",
@@ -921,7 +921,7 @@ def get_pdf_reports(fund_code: str, max_count: int = 12, save_dir: str = "pdf") 
     )
 
     json_response = fund_session.get(
-        "http://api.fund.eastmoney.com/f10/JJGG", headers=headers, params=params
+        "http://api.fund.eastmoney.com/f10/JJGG", headers=headers, params=params, proxies=request_proxies
     ).json()
 
     base_link = "http://pdf.dfcfw.com/pdf/H2_{}_1.pdf"

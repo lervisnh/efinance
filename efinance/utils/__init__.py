@@ -11,7 +11,7 @@ from retry.api import retry
 
 from ..common.config import FS_DICT, MARKET_NUMBER_DICT, MagicConfig, MarketType
 from ..config import SEARCH_RESULT_CACHE_PATH
-from ..shared import SEARCH_RESULT_DICT, session
+from ..shared import SEARCH_RESULT_DICT, session, request_proxies
 
 # 函数变量
 F = TypeVar("F")
@@ -176,7 +176,7 @@ def search_quote(
         ("count", f"{max(count, 5)}"),
     )
     try:
-        json_response = session.get(url, params=params).json()
+        json_response = session.get(url, params=params, proxies=request_proxies).json()
         items = json_response["QuotationCodeTable"]["Data"]
     except json.JSONDecodeError:
         RuntimeWarning(
@@ -408,5 +408,8 @@ def add_market(
     else:
         FS_DICT[category] = new
 
+from .proxies import set_request_proxies
 
-__all__ = []
+__all__ = [
+    'set_request_proxies'
+]

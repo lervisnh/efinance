@@ -13,6 +13,7 @@ class CustomedSession(requests.Session):
         kwargs.setdefault("timeout", 180)  # 3min
         return super(CustomedSession, self).request(*args, **kwargs)
 
+request_proxies = {}
 
 session = CustomedSession()
 adapter = requests.adapters.HTTPAdapter(
