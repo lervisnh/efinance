@@ -13,6 +13,7 @@
 import os
 import sys
 from pathlib import Path
+import toml
 
 here = Path(__file__).parent
 sys.path.insert(0, os.path.abspath("../"))
@@ -23,10 +24,8 @@ sys.path.insert(0, os.path.abspath("."))
 project = "efinance"
 copyright = "2021, micro sheep"
 author = "micro sheep"
-version_info = dict()
-exec((here / "../efinance/__version__.py").read_text(), version_info)
 # The full version, including alpha/beta/rc tags
-release = version_info["__version__"]
+release = toml.load(here / "../pyproject.toml")["project"]["version"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
